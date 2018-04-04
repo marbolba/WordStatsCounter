@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,16 +21,18 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
 
-        //testing reader
-        WordReader readerForTau=new WordReader("tau_list_motywacyjny.txt");
-        ArrayList<String> words=readerForTau.getWords();
-        Dictionary slownik=new Dictionary();
-        for(String w:words)
-        {
-            slownik.addWord(w);
-        }
-        slownik.printValues();
+        //for 1 file only
+        /*WordReader readerForSingleFile=new WordReader("tau-list_motywacyjny.txt");
+        ArrayList<String> wordsSingle=readerForSingleFile.getWords();
+        Dictionary slownik=new Dictionary(wordsSingle);
+        slownik.printValues();*/
 
+        //for artist
+        String artist="stachursky";
+        WordReader readerForTau= new WordReader(new Artist(artist));     //madnatory
+        ArrayList<String> words=readerForTau.getWords();
+        Dictionary tauDict=new Dictionary(words,artist);
+        tauDict.printValues();
 }
 
 

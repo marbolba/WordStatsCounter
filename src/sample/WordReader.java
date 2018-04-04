@@ -9,23 +9,36 @@ public class WordReader
 {
     protected ArrayList<String> words;
 
-    public WordReader(String source)        //konstruktor domyslny
+    WordReader()
     {
         words = new ArrayList<String>();
+    }
+    WordReader(String source)        //konstruktor domyslny
+    {
+        this();
         readDoc(source);
     }
-    public String removeSigns(String text)
+    WordReader(Artist artist)
     {
-        String cleanText="";
-        String[] letters = text.split("");      //convert to array
-        for(int i=0;i<letters.length;i++)
+        this();
+        System.out.println("szukam dla artysty: "+artist.getName());
+        //search
+        File folderText=new File("./text/");
+        File files[]=folderText.listFiles();
+        int countFiles=0;
+        for(File f:files)
         {
-            if(!letters[i].equals(",")&&!letters[i].equals(".")&&!letters[i].equals("?")&&!letters[i].equals("!")&&!letters[i].equals("\"")&&
-               !letters[i].equals(":")&&!letters[i].equals("*")&&!letters[i].equals("#")&&!letters[i].equals("$")&&!letters[i].equals("(")&&
-               !letters[i].equals(")")&&!letters[i].equals("-"))        //illegal signs
-                cleanText+=letters[i];
+            if(f.getName().contains(artist.getName()+"-"))      //artist_name-title  - standarize
+            {
+                readDoc(f.getName());
+                countFiles++;
+            }
         }
-        return cleanText;
+        if(countFiles==0)
+        {
+            System.out.println("ERROR: there are no files of "+artist.getName());
+            words=null;
+        }
     }
     public void readDoc(String source)
     {
@@ -33,15 +46,19 @@ public class WordReader
         String line;
         Charset ch = Charset.forName("UTF-8");      //include national signs
         try {
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(source),ch));
+            br = new BufferedReader(new InputStreamReader(new FileInputStream("text/"+source),ch));
 
             while ((line= br.readLine()) != null)
             {
                 String[] withSplit;
-                line=removeSigns(line.toLowerCase());           //change to lower case to standardize all strings
+                line=line.replaceAll("[^a-żA-Ż ]","").toLowerCase();     //with polish signs, to lower case to standardize all strings
+                //line=removeSigns(line.toLowerCase());
                 withSplit = line.split(" ");
                 for(String w:withSplit)
-                    words.add(w);
+                {
+                    if(w.length()>3)       //takes only words longer than 3 signs
+                        words.add(w);
+                }
 
             }
         } catch (IOException e) {e.printStackTrace();}
